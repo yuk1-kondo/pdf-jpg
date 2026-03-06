@@ -1,0 +1,45 @@
+name: Build Windows Artifacts
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Inno Setup
+        shell: powershell
+        run: choco install innosetup --no-progress -y
+
+      - name: Build app executable
+        shell: powershell
+        run: powershell -ExecutionPolicy Bypass -File scripts/build_windows.ps1
+
+      - name: Build installer
+        shell: powershell
+        run: powershell -ExecutionPolicy Bypass -File scripts/make_installer.ps1
+
+      - name: Upload app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NeonPDFShot-app
+          path: dist/NeonPDFShot
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NeonPDFShot-installer
+          path: dist-installer/*.exe

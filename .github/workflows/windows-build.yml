@@ -15,18 +15,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
         with:
-          python-version: "3.11"
+          dotnet-version: "8.0.x"
 
       - name: Install Inno Setup
         shell: powershell
         run: choco install innosetup --no-progress -y
 
-      - name: Build app executable
+      - name: Build app executable (.NET)
         shell: powershell
-        run: powershell -ExecutionPolicy Bypass -File scripts/build_windows.ps1
+        run: powershell -ExecutionPolicy Bypass -File scripts/build_windows_dotnet.ps1
 
       - name: Build installer
         shell: powershell
@@ -36,7 +36,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: NeonPDFShot-app
-          path: dist/NeonPDFShot
+          path: dist-dotnet/NeonPDFShot
 
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4

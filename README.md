@@ -2,6 +2,8 @@
 
 ローカル環境で動作する、ドラッグ&ドロップ対応の PDF -> JPG 変換アプリです。
 
+企業PC向けに、Python依存をなくした `.NET 8 (WPF)` 版を同梱しています。
+
 ## Features
 
 - 1ファイル/複数ファイルの PDF をまとめて変換
@@ -10,24 +12,23 @@
 - DPI と JPG 品質を調整可能
 - オフライン変換 (PDF を外部送信しない)
 
-## Quick Start (Windows)
+## Quick Start (Windows / .NET 8版)
 
 プロジェクト直下で実行:
 
 ```bat
-scripts\build_windows.bat
+powershell -ExecutionPolicy Bypass -File scripts\build_windows_dotnet.ps1
 ```
 
 これで以下を一気に実行します。
 
-- `.venv` 作成
-- 依存パッケージインストール
-- PyInstaller で `exe` 生成
+- .NET アプリを self-contained で publish
+- Pythonランタイム不要の配布物を生成
 
 生成物:
 
-- 通常ビルド: `dist\NeonPDFShot\NeonPDFShot.exe`
-- 単一ファイルビルド: `scripts\build_windows.bat -OneFile` -> `dist\NeonPDFShot.exe`
+- 通常: `dist-dotnet\NeonPDFShot\NeonPDFShot.exe`
+- 単一ファイル: `powershell -ExecutionPolicy Bypass -File scripts\build_windows_dotnet.ps1 -SingleFile`
 
 ## MacからWindows成果物を作る (GitHub Actions)
 
@@ -52,6 +53,8 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
+※ こちらは旧Python版 (`app.py`) の実行手順です。
+
 ## Run
 
 ```bash
@@ -60,17 +63,16 @@ python app.py
 
 ## Build EXE (Windows)
 
-```bat
-pip install pyinstaller
-pyinstaller --noconfirm --windowed --name "NeonPDFShot" app.py
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/build_windows_dotnet.ps1
 ```
 
-生成物は `dist/NeonPDFShot/` 配下に作られます。
+生成物は `dist-dotnet/NeonPDFShot/` 配下に作られます。
 
 ## Build Installer (.exe)
 
 1. Inno Setup をインストール
-2. 先に `scripts\build_windows.bat` でアプリ本体をビルド
+2. 先に `scripts\build_windows_dotnet.ps1` でアプリ本体をビルド
 3. 次を実行
 
 ```powershell
@@ -96,3 +98,4 @@ Inno Setup 設定ファイル:
 
 - スキャンPDFなどページ数が多い場合は変換に時間がかかります。
 - ファイル名は `<pdf名>_page_001.jpg` 形式で保存されます。
+- 企業配布時は、署名済みインストーラーを推奨します (AppLocker/WDAC対策)。
